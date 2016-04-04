@@ -51,38 +51,28 @@ app.post('/rate-limit', function(req, res) {
   key = req.body.key;
   cost = req.body.cost;
   rateLimit = req.body.rateLimit;
-  console.log("IN RATE LIMIT");
-  console.log(appName, key, cost, rateLimit);
 
   client.keys('*', function(err, values){
-    console.log("keys we got back");
-    console.log(values);
-  })
+          })
 
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
   async.waterfall([
     function(cb){
-      console.log("pre ensureAppAndKey");
       return rateLimiter.ensureAppAndKey(appName, key, rateLimit, client, cb);
     },
     function(cb){
-      console.log("pre rateLimit");
       return rateLimiter.rateLimit(appName, key, client, function(err, response){
         if (err){return cb(err);}
         setRateLimit = response;
-        console.log("post limit");
-        res.set('X-Rate-Limit-Limit', response);
+          res.set('X-Rate-Limit-Limit', response);
         return cb();
       })
     },
     function(cb){
-      console.log("pre rateLimit Apply")
       return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, returnVals){
-        console.log("post rateLimit Apply");
-        console.log(returnVals);
-        if(err){return cb(err);}
+            if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
           res.status(404);
@@ -95,8 +85,6 @@ app.post('/rate-limit', function(req, res) {
       });
     }
   ], function(err){
-      console.log("in rate-limit call back");
-      console.log(err);
       if (err){
         res.status(500);
       }
