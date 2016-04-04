@@ -79,18 +79,18 @@ app.post('/rate-limit', function(req, res) {
     },
     function(cb){
       console.log("pre rateLimit Apply")
-      return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, response){
-        console.log("post rateLimit Apply")
+      return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, returnVals){
+        console.log("post rateLimit Apply");
+        console.log(returnVals);
         if(err){return cb(err);}
 
-        if (response < 0) {
+        if (returnVals[0] < 0) {
           res.status(404);
-          response = 0;
         } else {
           res.status(200);
         }
 
-        res.set('X-Rate-Limit-Remaining', response);
+        res.set('X-Rate-Limit-Remaining', returnVals[1]);
         return cb();
       });
     }
