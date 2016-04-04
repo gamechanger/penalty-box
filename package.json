@@ -31,7 +31,7 @@
     "redis": "^0.10.3",
     "winston": "^0.7.3",
     "body-parser": "^1.4.3",
-    "optimist": "^0.6.1",
+    "minimist": "^1.2.0",
     "node-uuid": "^1.4.1",
     "underscore": "^1.6.0",
     "async": "^0.9.0",

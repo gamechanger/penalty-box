@@ -1,7 +1,0 @@
-image: docker.gamechanger.io/test/lox
-services:
-  - redis
-script:
-  - cd $REPO
-  - npm install
-  - npm test
