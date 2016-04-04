@@ -1,31 +1,26 @@
 {
-  "name": "lox",
-  "description": "Distributed lock service with an HTTP API",
-  "version": "0.0.3",
-  "homepage": "http://github.com/gamechanger/lox",
-  "bugs": "http://github.com/gamechanger/lox/issues",
+  "name": "penalty-box",
+  "description": "Restful Rate Limiter",
+  "version": "0.0.1",
+  "homepage": "http://github.com/gamechanger/penalty-box",
+  "bugs": "http://github.com/gamechanger/penalty-box/issues",
   "keywords": [
-    "distributed",
-    "lock"
+    "rate limiter",
+    "node"
   ],
   "author": "GameChanger <gc.io>",
   "contributors": [
     {
-      "name": "Travis Thieman",
-      "email": "travis@gc.io",
-      "url": "http://github.com/thieman"
-    },
-    {
-      "name": "Tom Leach",
-      "email": "tom@gc.io",
-      "url": "http://github.com/tleach"
+      "name": "Alex Etling",
+      "email": "alex@gc.com",
+      "url": "http://github.com/paetling"
     }
   ],
   "repository": {
     "type": "git",
-    "url": "http://github.com/gamechanger/lox"
+    "url": "http://github.com/gamechanger/penalty-box"
   },
-  "main": "./lox.js",
+  "main": "./penalty-box.js",
   "dependencies": {
     "express": "^4.4.5",
     "redis": "^0.10.3",
@@ -44,9 +39,5 @@
     "request": "^2.36.0",
     "supertest": "^0.13.0",
     "raml2html": "^0.23.1"
-  },
-  "scripts": {
-    "test": "LOX_PORT=9050 node_modules/.bin/mocha test --recursive --spec reporter",
-    "docs": "raml2html docs/api.raml > docs/api.html"
   }
 }
