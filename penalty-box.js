@@ -4,8 +4,9 @@ var _ = require('underscore');
 var async = require('async');
 var winston = require('winston');
 var expressWinston = require('express-winston');
+var config = require('./lib/config');
 var rateLimiter = require('./lib/rate-limiter');
-var redis = require('./redis-client');
+var redis = require('./lib/redis-client');
 var client = redis.client;
 
 var app = express();
@@ -30,7 +31,7 @@ if (config.log_requests.toLowerCase() === 'true') {
 }
 
 app.get('/health', function(req, res) {
-  return res.send(200);
+  return res.sendStatus(200);
 });
 
 /**
@@ -50,23 +51,36 @@ app.post('/rate-limit', function(req, res) {
   key = req.body.key;
   cost = req.body.cost;
   rateLimit = req.body.rateLimit;
+  console.log("IN RATE LIMIT");
+  console.log(appName, key, cost, rateLimit);
+
+  client.keys('*', function(err, values){
+    console.log("keys we got back");
+    console.log(values);
+  })
 
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
-  async.series([
+  async.waterfall([
     function(cb){
+      console.log("pre ensureAppAndKey");
       return rateLimiter.ensureAppAndKey(appName, key, rateLimit, client, cb);
     },
     function(cb){
+      console.log("pre rateLimit");
       return rateLimiter.rateLimit(appName, key, client, function(err, response){
         if (err){return cb(err);}
+        setRateLimit = response;
+        console.log("post limit");
         res.set('X-Rate-Limit-Limit', response);
+        return cb();
       })
-      return cb();
     },
     function(cb){
+      console.log("pre rateLimit Apply")
       return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, response){
+        console.log("post rateLimit Apply")
         if(err){return cb(err);}
 
         if (response < 0) {
@@ -77,11 +91,23 @@ app.post('/rate-limit', function(req, res) {
         }
 
         res.set('X-Rate-Limit-Remaining', response);
-        res.send("");
         return cb();
       });
     }
-  ]);
+  ], function(err){
+      console.log("in rate-limit call back");
+      console.log(err);
+      if (err){
+        res.status(500);
+      }
+      res.send("");
+      return;
+    });
+});
+
+
+app.listen(config.port, function() {
+  logger.info('penalty-box server listening on port ' + config.port);
 });
 
 

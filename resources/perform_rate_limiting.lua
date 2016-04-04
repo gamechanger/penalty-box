@@ -11,7 +11,7 @@ local pastEpoch = tonumber(redis.call('get', epochKey))
 local epochDiffSec = (currentEpoch - pastEpoch) / 1000
 
 if (epochDiffSec > 180) then
-    addTokens = epochDiffSec * rateLimitPerHour / 3600
+    local addTokens = epochDiffSec * rateLimitPerHour / 3600
     currentTokens = math.min(currentTokens + addTokens, rateLimitPerHour)
     redis.call('set', tokenKey, tostring(currentTokens))
 end
@@ -19,7 +19,7 @@ end
 if (currentTokens <= 0) then
     return -1
 else
-    currentTokens = math.max(mincurrentTokens - requestCost, 0)
+    currentTokens = math.max(currentTokens - requestCost, 0)
     redis.call('set', tokenKey, tostring(currentTokens))
     return currentTokens
 end
