@@ -39,5 +39,8 @@
     "request": "^2.36.0",
     "supertest": "^0.13.0",
     "raml2html": "^0.23.1"
+  },
+  "scripts": {
+    "test": "node_modules/.bin/mocha test --recursive"
   }
 }
