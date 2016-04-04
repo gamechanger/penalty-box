@@ -4,14 +4,14 @@ var _ = require('underscore');
 var async = require('async');
 var winston = require('winston');
 var expressWinston = require('express-winston');
+var config = require('./lib/config');
+var rateLimiter = require('./lib/rate-limiter');
+var redis = require('./lib/redis-client');
+var client = redis.client;
 
 var app = express();
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
-
-var lock = require('./lib/lock');
-var config = require('./lib/config');
-var lua = require('./lib/lua');
 
 var logger = new (winston.Logger)();
 logger.add(winston.transports.Console, {timestamp: true});
@@ -31,119 +31,72 @@ if (config.log_requests.toLowerCase() === 'true') {
 }
 
 app.get('/health', function(req, res) {
-  return res.send(200);
+  return res.sendStatus(200);
 });
 
 /**
- * GET /lock
- * Returns the number of locks currently held on the provided key.
- * You generally don't want to perform any client-side logic on this as then
- * count may be stale by the time it gets to your client. Should only be used
- * for monitoring, introspection, that sort of thing.
- * @param {string} key the identifier of the shared lock for which to get a count
+ * POST /rate-limit
+ * This will check the application's key to make sure a request is allowed
+ * 404 Response will be returned if limit has been reached
+ * 200 Response will be returned request is allowed
+ * X-Rate-Limit-Limit will be returned in a header with the number of requests allowed per hour
+ * X-Rate-Limit-Remaining will be returned in a header with the number of requests remaining
+ * @param {string} appName the name of the app trying to use the rate limiter
+ * @param {string} key the key the app is attempting to rate limit on
+ * @param {integer} cost how many tokens the requests take
+ * @param {integer} rateLimit max number of requests per hour for this key
  */
-app.get('/lock', function(req, res) {
+app.post('/rate-limit', function(req, res) {
+  appName = req.body.appName;
+  key = req.body.key;
+  cost = req.body.cost;
+  rateLimit = req.body.rateLimit;
 
-  if (_.isUndefined(req.query.key)) {
+  client.keys('*', function(err, values){
+          })
+
+  if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
-
-  async.series([
-    function(callback) {
-      lock.reapLock(req.query.key, callback);
+  async.waterfall([
+    function(cb){
+      return rateLimiter.ensureAppAndKey(appName, key, rateLimit, client, cb);
     },
-    function(callback) {
-      lock.countLocks(req.query.key, function(err, count) {
-        if (err) { return callback(err); }
-        return res.status(200).json({heldLocks: count});
+    function(cb){
+      return rateLimiter.rateLimit(appName, key, client, function(err, response){
+        if (err){return cb(err);}
+        setRateLimit = response;
+          res.set('X-Rate-Limit-Limit', response);
+        return cb();
+      })
+    },
+    function(cb){
+      return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, returnVals){
+            if(err){return cb(err);}
+
+        if (returnVals[0] < 0) {
+          res.status(403);
+        } else {
+          res.status(200);
+        }
+
+        res.set('X-Rate-Limit-Remaining', returnVals[1]);
+        return cb();
       });
     }
-  ], function(err) {
-    if (err) { return res.send(500); }
-  });
-
-});
-
-/**
- * POST /lock
- * Attempt to acquire a shared lock. Acquiring the lock will fail if maxiumLocks or more
- * are already being held by other clients. Returns 201 with a JSON object with the acquired
- * lockId if the lock was successfully acquired otherwise 204.
- * @param {string} key the identifier of the shared lock to acquire
- * @param {integer} maximumLocks the maximum number of locks that can be held after a successful lock acquisition
- * @param {number} ttlSeconds the number of seconds for which to hold the lock
- */
-app.post('/lock', function(req, res) {
-
-  if ([req.body.key, req.body.maximumLocks, req.body.ttlSeconds].some(_.isUndefined)) {
-    return res.sendStatus(400);
-  }
-
-  async.series([
-    function(callback) {
-      lock.reapLock(req.body.key, callback);
-    },
-    function(callback) {
-      lock.acquireLock(req.body.key, req.body.maximumLocks, req.body.ttlSeconds, function(err, lockId) {
-        if (err) { return callback(err); }
-        if (lockId) { return res.status(201).json({lockId: lockId}); }
-        return res.sendStatus(204);
-      });
-    }
-  ], function(err) {
-      if (err) { return res.send(500); }
-  });
-});
-
-/**
- * POST /locks
- * Attempt to acquire multiple shared locks. Acquiring *all* of the locks will fail if maxiumLocks or more
- * are already being held by other clients on *any* of the keys. Returns 201 with a JSON object with a map
- * of the keys to each acquired lockId if the locks were successfully acquired, otherwise 204.
- * @param {[string]} keys the identifiers of the shared locks to acquire
- * @param {integer} maximumLocks the maximum number of locks (per key) that can be held after a successful lock acquisition
- * @param {number} ttlSeconds the number of seconds for which to hold each lock
- */
-app.post('/locks', function(req, res) {
-
-  if ([req.body.keys, req.body.maximumLocks, req.body.ttlSeconds].some(_.isUndefined)) {
-    return res.sendStatus(400);
-  }
-
-  async.series([
-    function(callback) {
-      async.each(req.body.keys, function(key, cb) { lock.reapLock(key, cb); }, callback);
-    },
-    function(callback) {
-      lock.acquireMultipleLocks(req.body.keys, req.body.maximumLocks, req.body.ttlSeconds, function(err, lockIdMapping) {
-        if (err) { return callback(err); }
-        if (lockIdMapping) { return res.status(201).json({lockIds: lockIdMapping}); }
-        return res.sendStatus(204);
-      });
-    }], function(err) {
-      if (err) { return res.send(500); }
+  ], function(err){
+      if (err){
+        res.status(500);
+      }
+      res.send("");
+      return;
     });
-
 });
 
-/**
- * DELETE /lock/:lockId
- * Release any lock that is currently held with the passed lockId. Returns 204.
- * @param {string} lockId the lockId to release
- */
-app.delete('/lock/:lockId', function(req, res) {
-  if (_.isUndefined(req.params.lockId)) { return res.send(400); }
-
-  lock.releaseLock(req.params.lockId, function(err) {
-    if (err) {
-      return res.send(500);
-    }
-    return res.sendStatus(204);
-  });
-});
 
 app.listen(config.port, function() {
-  logger.info('lox server listening on port ' + config.port);
+  logger.info('penalty-box server listening on port ' + config.port);
 });
+
 
 module.exports = app;
