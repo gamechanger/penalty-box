@@ -75,7 +75,7 @@ app.post('/rate-limit', function(req, res) {
             if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
-          res.status(404);
+          res.status(403);
         } else {
           res.status(200);
         }
