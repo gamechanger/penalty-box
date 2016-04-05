@@ -1,0 +1,56 @@
+#%RAML 0.8
+---
+title: Penalty Box
+baseUri: "http://penalty-box.yourdomain.com"
+documentation:
+  - title: "Penalty Box: A simple restful rate limiter"
+    content: |
+      Penalty box exposes an API that lets multiple service use it as a restful rate limiter. That API is documented here.
+
+      You may also be interested in [the GitHub repository](http://github.com/gamechanger/penalty-box)
+/health:
+  description: Health check endpoint
+  get:
+    description: Returns 200 if the service is available
+    responses:
+      200:
+        description: The Penalty Box service is available and serving requests
+/rate-limit:
+  description: Checks whether a request is allowed and keeps track of how often a key has been accessed
+  post:
+    description: Post info on a request to see if request is allowed. If allowed Penalty Box appends keep track of it to enforce rate limits
+    queryParameters:
+      app_name:
+        type: string
+        description: The name of the application using the rate limiter
+        required: true
+      key:
+        type: string
+        description: The key the application would like to rate limit
+        required: true
+      cost:
+        type: integer
+        description: How much this request should cost.  Typically each request is cost 1, but this enables weighting different requests differently
+        required: true
+      rate_limit:
+        type: integer
+        description: How many requests per hour this key should get. This is used in initial setup of the rate_limit.  Once written it will not be overwritten
+        required: true
+    responses:
+      200:
+        description: The request was allowed
+        headers:
+          X-Rate-Limit-Limit:
+            description: The rate limit for this key in this app
+          X-Rate-Limit-Remaining:
+            description: The number of requests remaining to this key for this app
+      400:
+        description: The request was missing one more more required arguments
+      403:
+        description: The request was denied because the rate limit has been reached
+        headers:
+          X-Rate-Limit-Limit:
+            description: The rate limit for this key in this app
+          X-Rate-Limit-Remaining:
+            description: The number of requests remaining to this key for this app
+
