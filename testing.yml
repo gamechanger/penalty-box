@@ -1,0 +1,7 @@
+image: npm:4
+services:
+  - redis
+script:
+  - cd $REPO
+  - npm install
+  - npm test
