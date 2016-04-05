@@ -47,10 +47,10 @@ app.get('/health', function(req, res) {
  * @param {integer} rateLimit max number of requests per hour for this key
  */
 app.post('/rate-limit', function(req, res) {
-  appName = req.body.appName;
+  appName = req.body.app_name;
   key = req.body.key;
   cost = req.body.cost;
-  rateLimit = req.body.rateLimit;
+  rateLimit = req.body.rate_limit;
 
   client.keys('*', function(err, values){
           })

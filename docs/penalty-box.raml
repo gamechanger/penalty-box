@@ -20,7 +20,7 @@ documentation:
   post:
     description: Post info on a request to see if request is allowed. If allowed Penalty Box appends keep track of it to enforce rate limits
     queryParameters:
-      appName:
+      app_name:
         type: string
         description: The name of the application using the rate limiter
         required: true
@@ -32,9 +32,9 @@ documentation:
         type: integer
         description: How much this request should cost.  Typically each request is cost 1, but this enables weighting different requests differently
         required: true
-      rateLimit:
+      rate_limit:
         type: integer
-        description: How many requests per hour this key should get. This is used in initial setup of the rateLimit.  Once written it will not be overwritten
+        description: How many requests per hour this key should get. This is used in initial setup of the rate_limit.  Once written it will not be overwritten
         required: true
     responses:
       200:

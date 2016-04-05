@@ -6,7 +6,7 @@ describe("HTTP Endpoint Tests", function(){
     describe("POST Tests", function(){
         describe("/rate-limit tests", function(){
             it("simple post method", function(done){
-                form = {"appName": "test1", "key": "key1", "cost": 1, "rateLimit": 10};
+                form = {"app_name": "test1", "key": "key1", "cost": 1, "rate_limit": 10};
                 request(app)
                 .post('/rate-limit')
                 .set('Content-Type', 'application/json')
@@ -20,7 +20,7 @@ describe("HTTP Endpoint Tests", function(){
             });
 
             it("multiple calls leading to 404", function(done){
-                form = {"appName": "test1", "key": "keyX", "cost": 1, "rateLimit": 2};
+                form = {"app_name": "test1", "key": "keyX", "cost": 1, "rate_limit": 2};
                 request(app)
                 .post('/rate-limit')
                 .set('Content-Type', 'application/json')
@@ -55,7 +55,7 @@ describe("HTTP Endpoint Tests", function(){
 
             describe("404 because cost is to high", function(){
                     it("cost 1, initial rate limit 0", function(done){
-                    form = {"appName": "test1", "key": "key2", "cost": 1, "rateLimit": 0};
+                    form = {"app_name": "test1", "key": "key2", "cost": 1, "rate_limit": 0};
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
@@ -68,7 +68,7 @@ describe("HTTP Endpoint Tests", function(){
                     });
                 })
                 it("cost 11, initial rate limit 10", function(done){
-                    form = {"appName": "test1", "key": "key3", "cost": 11, "rateLimit": 10};
+                    form = {"app_name": "test1", "key": "key3", "cost": 11, "rate_limit": 10};
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
@@ -83,8 +83,8 @@ describe("HTTP Endpoint Tests", function(){
             });
 
             describe("errors due to not passing the write arguments", function(){
-                it("did not pass appName", function(done){
-                    form = {"key": "key1", "cost": 1, "rateLimit": 10};
+                it("did not pass app_name", function(done){
+                    form = {"key": "key1", "cost": 1, "rate_limit": 10};
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
@@ -95,7 +95,7 @@ describe("HTTP Endpoint Tests", function(){
                     });
                 });
                 it("did not pass key", function(done){
-                    form = {"appName": "test1", "cost": 1, "rateLimit": 10};
+                    form = {"app_name": "test1", "cost": 1, "rate_limit": 10};
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
@@ -106,7 +106,7 @@ describe("HTTP Endpoint Tests", function(){
                     });
                 });
                 it("did not pass cost", function(done){
-                    form = {"appName": "test1", "key": "key1", "rateLimit": 10};
+                    form = {"app_name": "test1", "key": "key1", "rate_limit": 10};
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
@@ -116,8 +116,8 @@ describe("HTTP Endpoint Tests", function(){
                         done();
                     });
                 });
-                it("did not pass rateLimit", function(done){
-                    form = {"appName": "test1", "key": "key1", "cost": 1};
+                it("did not pass rate_limit", function(done){
+                    form = {"app_name": "test1", "key": "key1", "cost": 1};
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
