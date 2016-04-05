@@ -1,4 +1,4 @@
-image: npm:4
+image: node:4
 services:
   - redis
 script:
