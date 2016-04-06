@@ -5,15 +5,13 @@ local currentEpoch = tonumber(ARGV[1])
 local requestCost = tonumber(ARGV[2])
 
 local returnStatus
-local rateLimitPerHour = tonumber(redis.call('get', rlKey))
+local rateLimitPerMinute = tonumber(redis.call('get', rlKey))
 local currentTokens = tonumber(redis.call('get', tokenKey))
 local pastEpoch = tonumber(redis.call('get', epochKey))
 local epochDiffSec = (currentEpoch - pastEpoch) / 1000
 
-if (epochDiffSec > 180) then
-    local addTokens = epochDiffSec * rateLimitPerHour / 3600
-    currentTokens = math.min(currentTokens + addTokens, rateLimitPerHour)
-    redis.call('set', tokenKey, tostring(currentTokens))
+if (epochDiffSec > 60) then
+    redis.call('set', tokenKey, tostring(rateLimitPerMinute))
     redis.call('set', epochKey, tostring(currentEpoch))
 end
 
