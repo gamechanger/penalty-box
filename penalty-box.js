@@ -91,8 +91,6 @@ app.post('/rate-limit', function(req, res) {
         if (err){return cb(err);}
         // Time returned is the last time epochMs was set. Need to add a minute to
         // get the time it resets
-        console.log("RATE LIMIT THINGS")
-        console.log(response + (1000 * 60))
         responseBody['X-Rate-Limit-Reset'] =  response + (1000 * 60);
         return cb();
       })

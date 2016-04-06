@@ -18,7 +18,7 @@ describe("HTTP Endpoint Tests", function(){
                     assert.equal(200, res.status);
                     assert.equal(res.body['X-Rate-Limit-Limit'], 10);
                     assert.equal(res.body['X-Rate-Limit-Remaining'], 9);
-                    assert(res.body['X-Rate-Limit-Reset'] > epoch1 && res.body['X-Rate-Limit-Reset'] < epoch2)
+                    assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
                     done();
                 });
             });
@@ -35,7 +35,7 @@ describe("HTTP Endpoint Tests", function(){
                     assert.equal(200, res.status);
                     assert.equal(res.body['X-Rate-Limit-Limit'], 2);
                     assert.equal(res.body['X-Rate-Limit-Remaining'], 1);
-                    assert(res.body['X-Rate-Limit-Reset'] > epoch1 && res.body['X-Rate-Limit-Reset'] < epoch2)
+                    assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
 
                     request(app)
                     .post('/rate-limit')
@@ -46,7 +46,7 @@ describe("HTTP Endpoint Tests", function(){
                         assert.equal(200, res.status);
                         assert.equal(res.body['X-Rate-Limit-Limit'], 2);
                         assert.equal(res.body['X-Rate-Limit-Remaining'], 0);
-                        assert(res.body['X-Rate-Limit-Reset'] > epoch1 && res.body['X-Rate-Limit-Reset'] < epoch2)
+                        assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
 
                         request(app)
                         .post('/rate-limit')
@@ -57,7 +57,7 @@ describe("HTTP Endpoint Tests", function(){
                             assert.equal(403, res.status);
                             assert.equal(res.body['X-Rate-Limit-Limit'], 2);
                             assert.equal(res.body['X-Rate-Limit-Remaining'], 0);
-                            assert(res.body['X-Rate-Limit-Reset'] > epoch1 && res.body['X-Rate-Limit-Reset'] < epoch2)
+                            assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
                             done();
                         });
                     });
@@ -77,7 +77,7 @@ describe("HTTP Endpoint Tests", function(){
                         assert.equal(403, res.status);
                         assert.equal(res.body['X-Rate-Limit-Limit'], 0);
                         assert.equal(res.body['X-Rate-Limit-Remaining'], 0);
-                        assert(res.body['X-Rate-Limit-Reset'] > epoch1 && res.body['X-Rate-Limit-Reset'] < epoch2)
+                        assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
                         done();
                     });
                 })
@@ -93,7 +93,7 @@ describe("HTTP Endpoint Tests", function(){
                         assert.equal(403, res.status);
                         assert.equal(res.body['X-Rate-Limit-Limit'], 10);
                         assert.equal(res.body['X-Rate-Limit-Remaining'], 10);
-                        assert(res.body['X-Rate-Limit-Reset'] > epoch1 && res.body['X-Rate-Limit-Reset'] < epoch2)
+                        assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
                         done();
                     });
                 })
