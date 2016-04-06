@@ -73,15 +73,6 @@ app.post('/rate-limit', function(req, res) {
       })
     },
     function(cb){
-      return rateLimiter.epochMs(appName, key, client, function(err, response){
-        if (err){return cb(err);}
-        // Time returned is the last time epochMs was set. Need to add a minute to
-        // get the time it resets
-        responseBody['X-Rate-Limit-Reset'] =  response + (1000 * 60);
-        return cb();
-      })
-    },
-    function(cb){
       return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, returnVals){
             if(err){return cb(err);}
 
@@ -94,6 +85,17 @@ app.post('/rate-limit', function(req, res) {
         responseBody['X-Rate-Limit-Remaining'] = returnVals[1]
         return cb();
       });
+    },
+    function(cb){
+      return rateLimiter.epochMs(appName, key, client, function(err, response){
+        if (err){return cb(err);}
+        // Time returned is the last time epochMs was set. Need to add a minute to
+        // get the time it resets
+        console.log("RATE LIMIT THINGS")
+        console.log(response + (1000 * 60))
+        responseBody['X-Rate-Limit-Reset'] =  response + (1000 * 60);
+        return cb();
+      })
     }
   ], function(err){
       if (err){

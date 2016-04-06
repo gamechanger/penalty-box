@@ -23,7 +23,7 @@ describe("HTTP Endpoint Tests", function(){
                 });
             });
 
-            it("multiple calls leading to 404", function(done){
+            it("multiple calls leading to 404. Check reset properly", function(done){
                 epoch1 = d.getTime() + 60 * 1000;
                 form = {"app_name": "test1", "key": "keyX", "cost": 1, "rate_limit": 2};
                 request(app)
