@@ -37,7 +37,7 @@ app.get('/health', function(req, res) {
 /**
  * POST /rate-limit
  * This will check the application's key to make sure a request is allowed
- * 404 Response will be returned if limit has been reached
+ * 429 Response will be returned if limit has been reached
  * 200 Response will be returned request is allowed
  * X-Rate-Limit-Limit will be returned with the number of requests allowed per hour
  * X-Rate-Limit-Remaining will be returned with the number of requests remaining
@@ -77,7 +77,7 @@ app.post('/rate-limit', function(req, res) {
             if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
-          res.status(403);
+          res.status(429);
         } else {
           res.status(200);
         }
