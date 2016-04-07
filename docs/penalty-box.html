@@ -147,7 +147,7 @@
   "X-Rate-Limit-Remaining": 3,
   "X-Rate-Limit-Reset": 1459971222000
 }
-</code></pre><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>The request was missing one more more required arguments</p><h2>HTTP status code <a href="http://httpstatus.es/403" target="_blank">403</a></h2><p>The request was denied because the rate limit has been reached</p><h3>Body</h3><p><strong>Type: application/json</strong></p><p><strong>Schema</strong>:</p><pre><code>{
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>The request was missing one more more required arguments</p><h2>HTTP status code <a href="http://httpstatus.es/429" target="_blank">429</a></h2><p>The request was denied because the rate limit has been reached</p><h3>Body</h3><p><strong>Type: application/json</strong></p><p><strong>Schema</strong>:</p><pre><code>{
   "X-Rate-Limit-Limit": 5,
   "X-Rate-Limit-Remaining": 0,
   "X-Rate-Limit-Reset": 1459971222000

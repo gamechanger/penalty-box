@@ -54,7 +54,7 @@ describe("HTTP Endpoint Tests", function(){
                         .send(form)
                         .end(function(err, res){
                             epoch2 = d.getTime() + 60 * 1000;
-                            assert.equal(403, res.status);
+                            assert.equal(429, res.status);
                             assert.equal(res.body['X-Rate-Limit-Limit'], 2);
                             assert.equal(res.body['X-Rate-Limit-Remaining'], 0);
                             assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
@@ -74,7 +74,7 @@ describe("HTTP Endpoint Tests", function(){
                     .send(form)
                     .end(function(err, res){
                         epoch2 = d.getTime() + 60 * 1000;
-                        assert.equal(403, res.status);
+                        assert.equal(429, res.status);
                         assert.equal(res.body['X-Rate-Limit-Limit'], 0);
                         assert.equal(res.body['X-Rate-Limit-Remaining'], 0);
                         assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
@@ -90,7 +90,7 @@ describe("HTTP Endpoint Tests", function(){
                     .send(form)
                     .end(function(err, res){
                         epoch2 = d.getTime() + 60 * 1000;
-                        assert.equal(403, res.status);
+                        assert.equal(429, res.status);
                         assert.equal(res.body['X-Rate-Limit-Limit'], 10);
                         assert.equal(res.body['X-Rate-Limit-Remaining'], 10);
                         assert(res.body['X-Rate-Limit-Reset'] >= epoch1 && res.body['X-Rate-Limit-Reset'] <= epoch2)
