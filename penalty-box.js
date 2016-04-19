@@ -59,8 +59,6 @@ app.post('/rate-limit', function(req, res) {
 
   client.keys('*', function(err, values){})
 
-  statsd.increment('penalty-box:request', 1, ['path:'+req.path])
-
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
@@ -107,8 +105,10 @@ app.post('/rate-limit', function(req, res) {
     });
 });
 
+
 app.listen(config.port, function() {
   logger.info('penalty-box server listening on port ' + config.port);
 });
+
 
 module.exports = app;
