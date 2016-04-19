@@ -87,4 +87,4 @@ Your response will be:
     reset: <epoch_time_in_ms_till_rate_limit_is_reset>
 ```
 
-It is important to note that remaining is still at ten. If your cost was greater than remaining we do not remove any requests from remaining, we simply tell you your request has been rate limited.
+It is important to note that `remaining` is still at ten. If your cost was greater than remaining we do not remove any requests from remaining, we simply tell you your request has been rate limited.
