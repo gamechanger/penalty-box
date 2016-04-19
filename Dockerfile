@@ -8,4 +8,4 @@ RUN npm install
 
 EXPOSE 80
 
-CMD ["/usr/src/docker-init"]
+CMD ["/usr/src/penalty-box/docker-init"]
