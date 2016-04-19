@@ -51,8 +51,8 @@ Some important information on the response body:
 ```
 limit - once set will not change
 remaining - tells clients how many requests left they have for the current minute
-is_rate_limited - will return false as long as the cost is does not exceed the amount of requests remaining
-reset - Epoch time in milliseconds when your current rate limiting window resets
+is_rate_limited - will return false as long as the cost does not exceed the amount of requests remaining
+reset - epoch time in milliseconds when your current rate limiting window resets
 ```
 
 ### Edge Cases
