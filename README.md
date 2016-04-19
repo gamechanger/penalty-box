@@ -57,7 +57,7 @@ reset - epoch time in milliseconds when your current rate limiting window resets
 
 ### Edge Cases
 #### Cost > Remaining and Remaining != 0
-Lets say you are making a request and your previous response from Penalty box was:
+Lets say you are making a request and your previous response from Penalty Box was:
 ```
 200 Success
 {
