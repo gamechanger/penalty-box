@@ -24,7 +24,7 @@ datadog_port: port to connect to on the datadog host (8135)
 
 ### Example Usage
 Penalty Box is an independent service which can be used to keep track of requests and inform clients when a request should be rate limited.
-Lets say you are working on a web application and you want to rate limit by user_id. You can post a request like the following to Penalty Box
+Lets say you are working on a web application and you want to rate limit by user_id. You can post a request like the following to Penalty Box:
 ```
 POST /rate-limit
 {
@@ -34,9 +34,9 @@ POST /rate-limit
     rateLimit: 60
 }
 ```
-These four arguments are the only ones that rate limit accepts.  They describe a unique name space (using appName and key) and provide the cost for the request (cost) and how many requests are allowed per minute (rateLimit).
+These four arguments are the only ones that rate limit accepts.  They describe a unique name space (using appName and key), provide the cost for the request (cost), and how many requests are allowed per minute (rateLimit).
 
-Penalty Box will respond with a response as follows
+Penalty Box will respond with a response as follows:
 ```
 200 Success
 {
@@ -48,10 +48,12 @@ Penalty Box will respond with a response as follows
 ```
 
 Some important information on the response body:
+```
     limit - once set will not change.
     remaining - tells clients how many requests left they have for the current minute
     is_rate_limited - will return false as long as the cost is does not exceed the amount of requests remaining
     reset - Epoch time in milliseconds when your current rate limiting window resets
+```
 
 ### Edge Cases
 #### Cost > Remaining and Remaining != 0
@@ -66,7 +68,7 @@ Lets say you are making a request and your previous response from Penalty box wa
 }
 ```
 
-If you make a new requests to Penalty Box
+If you make a new requests to Penalty Box:
 ```
 POST /rate-limit
 {
