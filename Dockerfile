@@ -1,11 +1,12 @@
 FROM node:4
 MAINTAINER Alex Etling<alex@gc.io>
 
-ADD . /usr/src/penalty-box
-WORKDIR /usr/src/penalty-box
+RUN mkdir -p /gc/penalty-box
+ADD . /gc/penalty-box
+WORKDIR /gc/penalty-box
 
 RUN npm install
 
 EXPOSE 80
 
-CMD ["/usr/src/penalty-box/docker-init"]
+CMD ["/gc/penalty-box/docker-init"]
