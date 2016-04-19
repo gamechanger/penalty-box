@@ -1,5 +1,5 @@
 ## Penalty Box - A redis backed rate limiter service
-[![Github License](https://img.shields.io/github/license/gamechanger/lox.svg)](https://github.com/gamechanger/lox/blob/master/LICENSE)
+[![Github License](https://img.shields.io/github/license/gamechanger/.svg)](https://github.com/gamechanger/penalty-box/blob/master/LICENSE)
 
 ### Installation
 Penalty Box is a Node.js service. After cloning the repository, you can run it with:
@@ -14,10 +14,10 @@ Penalty Box knows about the following configuration variables (defaults in paren
 ```
 debug: if True, enables additional debug information in logs (false)
 log_requests: if True, logs info on each HTTP request to stdout
-port: port on which to run the Lox HTTP API (80)
+port: port on which to run the Penalty Box HTTP API (80)
 redis_host: host of the underlying Redis instance (localhost)
 redis_port: port of the underlying Redis instance (6379)
-port: port on which to run the Lox HTTP API (80)
+port: port on which to run the Penalty Box HTTP API (80)
 datadog_host: host of the datadog server (localhost)
 datadog_port: port to connect to on the datadog host (8135)
 ```
