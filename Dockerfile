@@ -8,4 +8,4 @@ RUN npm install
 
 EXPOSE 80
 
-CMD node penalty-box.js
+CMD ["/usr/src/penalty-box/docker-init"]

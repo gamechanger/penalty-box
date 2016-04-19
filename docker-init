@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export DOCKERHOST=$(/sbin/ip route | awk '/default/ {print $3}')
+export DATADOG_HOST=$DOCKERHOST
+
+exec node penalty-box.js
