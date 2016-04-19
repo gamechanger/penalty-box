@@ -37,11 +37,10 @@ app.get('/health', function(req, res) {
 /**
  * POST /rate-limit
  * This will check the application's key to make sure a request is allowed
- * 429 Response will be returned if limit has been reached
- * 200 Response will be returned request is allowed
- * X-Rate-Limit-Limit will be returned with the number of requests allowed per hour
- * X-Rate-Limit-Remaining will be returned with the number of requests remaining
- * X-Rate-Limit-Reset will be returned with the time your rate limit will be reset, in epoch_ms
+ * limit: number of requests allowed per minute
+ * remaining: number of requests remaining
+ * is_rate_limited: will return boolean based off of if the request should be rate limited
+ * reset: time your rate limit will be reset, in epoch_ms
  * @param {string} appName the name of the app trying to use the rate limiter
  * @param {string} key the key the app is attempting to rate limit on
  * @param {integer} cost how many tokens the requests take
@@ -68,7 +67,7 @@ app.post('/rate-limit', function(req, res) {
     function(cb){
       return rateLimiter.rateLimit(appName, key, client, function(err, response){
         if (err){return cb(err);}
-        responseBody['X-Rate-Limit-Limit'] =  response;
+        responseBody['limit'] =  response;
         return cb();
       })
     },
@@ -77,12 +76,12 @@ app.post('/rate-limit', function(req, res) {
             if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
-          res.status(429);
+          responseBody['is_rate_limited'] = false;
         } else {
-          res.status(200);
+          responseBody['is_rate_limited'] = true;
         }
 
-        responseBody['X-Rate-Limit-Remaining'] = returnVals[1]
+        responseBody['remaining'] = returnVals[1];
         return cb();
       });
     },
@@ -91,7 +90,7 @@ app.post('/rate-limit', function(req, res) {
         if (err){return cb(err);}
         // Time returned is the last time epochMs was set. Need to add a minute to
         // get the time it resets
-        responseBody['X-Rate-Limit-Reset'] =  response + (1000 * 60);
+        responseBody['reset'] =  response + (1000 * 60);
         return cb();
       })
     }
