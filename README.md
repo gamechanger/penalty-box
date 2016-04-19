@@ -1,5 +1,5 @@
 ## Penalty Box - A redis backed rate limiter service
-[![Github License](https://img.shields.io/github/license/gamechanger/.svg)](https://github.com/gamechanger/penalty-box/blob/master/LICENSE)
+[![Github License](https://img.shields.io/github/license/gamechanger/penalty-box.svg)](https://github.com/gamechanger/penalty-box/blob/master/LICENSE)
 
 ### Installation
 Penalty Box is a Node.js service. After cloning the repository, you can run it with:
