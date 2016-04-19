@@ -78,9 +78,9 @@ app.post('/rate-limit', function(req, res) {
             if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
-          responseBody['is_rate_limited'] = false;
-        } else {
           responseBody['is_rate_limited'] = true;
+        } else {
+          responseBody['is_rate_limited'] = false;
         }
 
         responseBody['remaining'] = returnVals[1];
