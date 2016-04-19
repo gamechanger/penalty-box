@@ -20,9 +20,9 @@ documentation:
   post:
     description: |
       Post info on a request to see if request is allowed. If allowed Penalty Box appends keep track of it to enforce rate limits.
-      The response body contains three values: X-Rate-Limit-Limit, X-Rate-Limit-Remaining, X-Rate-Limit-Reset. The first value contains the rate limit for
-      this apps' key. The second value contains the number of requests left in this minute. The third value contains time (epoch ms) till the rate limit is
-      reset
+      The response body contains three values: limit, remaining, success, and reset. The first value contains the rate limit for
+      this apps' key. The second value contains the number of requests left in this minute. The third value contains whether or not
+      the request was accepted. The final value contains time (epoch ms) till the rate limit is reset.
     queryParameters:
       app_name:
         type: string
@@ -47,20 +47,10 @@ documentation:
           application/json:
             schema: |
               {
-                "X-Rate-Limit-Limit": 5,
-                "X-Rate-Limit-Remaining": 3,
-                "X-Rate-Limit-Reset": 1459971222000
+                "limit": 5,
+                "success": true,
+                "remaining": 3,
+                "reset": 1459971222000
               }
       400:
         description: The request was missing one more more required arguments
-      429:
-        description: The request was denied because the rate limit has been reached
-        body:
-          application/json:
-            schema: |
-              {
-                "X-Rate-Limit-Limit": 5,
-                "X-Rate-Limit-Remaining": 0,
-                "X-Rate-Limit-Reset": 1459971222000
-              }
-
