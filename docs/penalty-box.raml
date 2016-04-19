@@ -20,9 +20,9 @@ documentation:
   post:
     description: |
       Post info on a request to see if request is allowed. If allowed Penalty Box appends keep track of it to enforce rate limits.
-      The response body contains three values: limit, remaining, success, and reset. The first value contains the rate limit for
-      this apps' key. The second value contains the number of requests left in this minute. The third value contains whether or not
-      the request was accepted. The final value contains time (epoch ms) till the rate limit is reset.
+      The response body contains four values: limit, remaining, is_rate_limited, and reset. Limit value contains the rate limit for
+      this apps' key. Remaining contains the number of requests left in this minute. is_rate_limited contains whether or not
+      the request has hit the rate limit and should be limited. Reset contains time (epoch ms) till the rate limit is reset.
     queryParameters:
       app_name:
         type: string
@@ -48,7 +48,7 @@ documentation:
             schema: |
               {
                 "limit": 5,
-                "success": true,
+                "is_rate_limited": true,
                 "remaining": 3,
                 "reset": 1459971222000
               }

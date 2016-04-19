@@ -37,11 +37,10 @@ app.get('/health', function(req, res) {
 /**
  * POST /rate-limit
  * This will check the application's key to make sure a request is allowed
- * 200 Response will be returned whether response is allowed or not
- * limit: will be returned with the number of requests allowed per hour
- * remaining: will be returned with the number of requests remaining
- * success: will return boolean based off of if the response was allowed or not
- * reset: will be returned with the time your rate limit will be reset, in epoch_ms
+ * limit: number of requests allowed per minute
+ * remaining: number of requests remaining
+ * is_rate_limited: will return boolean based off of if the request should be rate limited
+ * reset: time your rate limit will be reset, in epoch_ms
  * @param {string} appName the name of the app trying to use the rate limiter
  * @param {string} key the key the app is attempting to rate limit on
  * @param {integer} cost how many tokens the requests take
@@ -77,9 +76,9 @@ app.post('/rate-limit', function(req, res) {
             if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
-          responseBody['success'] = false;
+          responseBody['is_rate_limited'] = false;
         } else {
-          responseBody['success'] = true;
+          responseBody['is_rate_limited'] = true;
         }
 
         responseBody['remaining'] = returnVals[1];
