@@ -6,10 +6,13 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var config = require('./lib/config');
 var rateLimiter = require('./lib/rate-limiter');
+var metrics_middleware = require('./middleware/metrics');
 var redis = require('./lib/redis-client');
 var client = redis.client;
 
 var app = express();
+// Middleware to run before processing requests
+app.use(metrics_middleware.handle);
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
@@ -54,8 +57,9 @@ app.post('/rate-limit', function(req, res) {
 
   responseBody = {}
 
-  client.keys('*', function(err, values){
-          })
+  client.keys('*', function(err, values){})
+
+  statsd.increment('penalty-box:request', 1, ['path:'+req.path])
 
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
@@ -103,10 +107,8 @@ app.post('/rate-limit', function(req, res) {
     });
 });
 
-
 app.listen(config.port, function() {
   logger.info('penalty-box server listening on port ' + config.port);
 });
-
 
 module.exports = app;
