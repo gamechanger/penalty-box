@@ -44,10 +44,10 @@ app.get('/health', function(req, res) {
  * remaining: number of requests remaining
  * is_rate_limited: will return boolean based off of if the request should be rate limited
  * reset: time your rate limit will be reset, in epoch_ms
- * @param {string} appName the name of the app trying to use the rate limiter
+ * @param {string} app_name the name of the app trying to use the rate limiter
  * @param {string} key the key the app is attempting to rate limit on
  * @param {integer} cost how many tokens the requests take
- * @param {integer} rateLimit max number of requests per minute for this key
+ * @param {integer} rate_limit max number of requests per minute for this key
  */
 app.post('/rate-limit', function(req, res) {
   appName = req.body.app_name;

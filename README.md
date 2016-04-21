@@ -28,13 +28,13 @@ Lets say you are working on a web application and you want to rate limit by user
 ```
 POST /rate-limit
 {
-    appName: "web"
+    app_name: "web"
     key: "<user_id>"
     cost: 1
-    rateLimit: 60
+    rate_limit: 60
 }
 ```
-These four arguments are the only ones that rate limit accepts.  They describe a unique name space (using appName and key), provide the cost for the request (cost), and how many requests are allowed per minute (rateLimit).
+These four arguments are the only ones that rate limit accepts.  They describe a unique name space (using app_name and key), provide the cost for the request (cost), and how many requests are allowed per minute (rate_limit).
 
 Penalty Box will respond with a response as follows:
 ```
@@ -72,10 +72,10 @@ If you make a new requests to Penalty Box:
 ```
 POST /rate-limit
 {
-    appName: "web"
+    app_name: "web"
     key: "<user_id>"
     cost: 20
-    rateLimit: 60
+    rate_limit: 60
 }
 ```
 
