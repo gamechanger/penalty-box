@@ -4,6 +4,8 @@ var _ = require('underscore');
 var async = require('async');
 var winston = require('winston');
 var expressWinston = require('express-winston');
+var cluster = require('cluster');
+var os = require('os');
 var config = require('./lib/config');
 var rateLimiter = require('./lib/rate-limiter');
 var metrics_middleware = require('./middleware/metrics');
@@ -105,10 +107,17 @@ app.post('/rate-limit', function(req, res) {
     });
 });
 
-
-app.listen(config.port, function() {
-  logger.info('penalty-box server listening on port ' + config.port);
-});
+if (cluster.isMaster) {
+  var numCPUs = os.cpus().length;
+  logger.info('Starting ' + numCPUs + ' penalty box processes')
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+} else {
+  app.listen(config.port, function() {
+    logger.info('penalty-box server listening on port ' + config.port);
+  });
+}
 
 
 module.exports = app;
