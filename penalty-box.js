@@ -113,6 +113,11 @@ if (cluster.isMaster) {
   for (var i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
+
+  cluster.on('exit', function(worker, code, signal) {
+    logger.error('Worker process ' + worker.process.pid + ' died. Restarting...');
+    cluster.fork();
+  });
 } else {
   app.listen(config.port, function() {
     logger.info('penalty-box server listening on port ' + config.port);
