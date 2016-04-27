@@ -55,17 +55,7 @@ app.post('/rate-limit', function(req, res) {
   }
   async.waterfall([
     function(cb){
-      return rateLimiter.ensureAppAndKey(appName, key, rateLimit, client, cb);
-    },
-    function(cb){
-      return rateLimiter.rateLimit(appName, key, client, function(err, response){
-        if (err){return cb(err);}
-        responseBody['limit'] =  response;
-        return cb();
-      })
-    },
-    function(cb){
-      return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, returnVals){
+      return rateLimiter.rateLimitAppKey(appName, key, cost, rateLimit, function(err, returnVals){
         if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
@@ -77,6 +67,13 @@ app.post('/rate-limit', function(req, res) {
         responseBody['remaining'] = returnVals[1];
         return cb();
       });
+    },
+    function(cb){
+      return rateLimiter.rateLimit(appName, key, client, function(err, response){
+        if (err){return cb(err);}
+        responseBody['limit'] =  response;
+        return cb();
+      })
     },
     function(cb){
       return rateLimiter.epochMs(appName, key, client, function(err, response){

@@ -22,96 +22,6 @@ describe('Test the functions that are adding values to redis', function() {
             async.waterfall(array, function(err){done();})
         });
     });
-    describe('Test ensureAppAndKey', function () {
-        it('Test basic setup', function(done){
-            rateLimiter.ensureAppAndKey("testApp", "key", 60, testClient, function(){
-                testClient.get('testApp:key_rl', function(err, res){
-                    assert.equal('60', res);
-                });
-                testClient.get('testApp:key_tkns', function(err, res){
-                    assert.equal('60', res);
-                });
-                testClient.get('testApp:key_epoch_ms', function(err, res){
-                    assert.equal(false, null == res);
-                    done();
-                });
-            });
-        });
-        it('Test more complicated setup', function(done){
-            rateLimiter.ensureAppAndKey("testApp", "key1", 60, testClient, function(){
-                rateLimiter.ensureAppAndKey("testApp", "key2", 55, testClient, function(){
-                    rateLimiter.ensureAppAndKey("testApp", "key3", 50, testClient, function(){
-                        rateLimiter.ensureAppAndKey("testApp", "key1", 45, testClient, function(){
-                            async.waterfall([
-                                function(cb){
-                                    testClient.keys('*', function(err, res){
-                                        assert.equal(9, res.length);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key1_rl', function(err, res){
-                                        assert.equal('60', res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key1_tkns', function(err, res){
-                                        assert.equal('60', res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key1_epoch_ms', function(err, res){
-                                        assert.equal(false, null == res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key2_rl', function(err, res){
-                                        assert.equal('55', res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key2_tkns', function(err, res){
-                                        assert.equal('55', res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key2_epoch_ms', function(err, res){
-                                        assert.equal(false, null == res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key3_rl', function(err, res){
-                                        assert.equal('50', res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key3_tkns', function(err, res){
-                                        assert.equal('50', res);
-                                        cb();
-                                    });
-                                },
-                                function(cb){
-                                    testClient.get('testApp:key3_epoch_ms', function(err, res){
-                                        assert.equal(false, null == res);
-                                        cb();
-                                    });
-                                },
-                            ],
-                            function(err){done();});
-
-                        });
-                    });
-                });
-            });
-        });
-    });
     describe('Test keyToken', function(){
         it('Test Basic Setup', function(done){
             testClient.set("testApp:key1_tkns", "60", function(err){
@@ -150,8 +60,6 @@ describe('Test the functions that are adding values to redis', function() {
                 });
             });
         });
-
-
         it('Empty dict', function(done){
             testClient.innerDict = {};
             rateLimiter.keyToken("testApp", "key1", testClient, function(err, response){

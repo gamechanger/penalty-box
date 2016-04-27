@@ -3,8 +3,19 @@ local tokenKey = KEYS[2]
 local epochKey = KEYS[3]
 local currentEpoch = tonumber(ARGV[1])
 local requestCost = tonumber(ARGV[2])
-local keyTimeout = ARGV[3]
+local rateLimit = ARGV[3]
+local keyTimeout = ARGV[4]
 
+-- Ensure that the rate limit keys are set up
+if (redis.call('setnx', rlKey, rateLimit) == 1) then
+    redis.call('expire', rlKey, keyTimeout)
+end
+if (redis.call('setnx', epochKey, currentEpoch) == 1) then
+    redis.call('expire', epochKey, keyTimeout)
+end
+redis.call('setnx', tokenKey, rateLimit)
+
+-- Perform the actual rate limit logic
 local returnStatus
 local rateLimitPerMinute = tonumber(redis.call('get', rlKey))
 local pastEpoch = tonumber(redis.call('get', epochKey))
