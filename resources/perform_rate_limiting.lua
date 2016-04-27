@@ -11,7 +11,7 @@ local pastEpoch = tonumber(redis.call('get', epochKey))
 local epochDiffSec = (currentEpoch - pastEpoch) / 1000
 
 if (epochDiffSec > 60) then
-    redis.call('setes', tokenKey, keyTimeout, tostring(rateLimitPerMinute))
+    redis.call('setex', tokenKey, keyTimeout, tostring(rateLimitPerMinute))
     redis.call('setex', epochKey, keyTimeout, tostring(currentEpoch))
 end
 
