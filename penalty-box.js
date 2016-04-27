@@ -2,8 +2,8 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
 var async = require('async');
-var winston = require('winston');
-var expressWinston = require('express-winston');
+var logging = require('./lib/logging');
+var loggingMiddleware = require('./middleware/logging')
 var cluster = require('cluster');
 var os = require('os');
 var config = require('./lib/config');
@@ -14,26 +14,15 @@ var client = redis.client;
 
 var app = express();
 // Middleware to run before processing requests
+if (config.log_requests.toLowerCase() === 'true') {
+  app.use(loggingMiddleware.handle);
+}
 app.use(metrics_middleware.handle);
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
-var logger = new (winston.Logger)();
-logger.add(winston.transports.Console, {timestamp: true});
+var logger = logging.logger
 
-if (config.log_requests.toLowerCase() === 'true') {
-  app.use(expressWinston.logger({
-    transports: [
-      new winston.transports.Console({
-        json: true,
-        colorize: true,
-        timestamp: true
-      })
-    ],
-    meta: config.debug.toLowerCase() === 'true' ? true : false,
-    msg: "{{res.statusCode}} HTTP {{req.method}} {{req.url}}"
-  }));
-}
 
 app.get('/health', function(req, res) {
   return res.sendStatus(200);
