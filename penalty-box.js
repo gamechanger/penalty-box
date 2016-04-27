@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var _ = require('underscore');
 var async = require('async');
 var logging = require('./lib/logging');
-var loggingMiddleware = require('./middleware/logging')
+var loggingMiddleware = require('./middleware/logging');
 var cluster = require('cluster');
 var os = require('os');
 var config = require('./lib/config');
@@ -21,8 +21,7 @@ app.use(metrics_middleware.handle);
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
-var logger = logging.logger
-
+var logger = logging.logger;
 
 app.get('/health', function(req, res) {
   return res.sendStatus(200);
@@ -46,9 +45,9 @@ app.post('/rate-limit', function(req, res) {
   cost = req.body.cost;
   rateLimit = req.body.rate_limit;
 
-  responseBody = {}
+  responseBody = {};
 
-  client.keys('*', function(err, values){})
+  client.keys('*', function(err, values){});
 
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
@@ -59,30 +58,30 @@ app.post('/rate-limit', function(req, res) {
         if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
-          responseBody['is_rate_limited'] = true;
+          responseBody.is_rate_limited = true;
         } else {
-          responseBody['is_rate_limited'] = false;
+          responseBody.is_rate_limited = false;
         }
 
-        responseBody['remaining'] = returnVals[1];
+        responseBody.remaining = returnVals[1];
         return cb();
       });
     },
     function(cb){
       return rateLimiter.rateLimit(appName, key, client, function(err, response){
         if (err){return cb(err);}
-        responseBody['limit'] =  response;
+        responseBody.limit =  response;
         return cb();
-      })
+      });
     },
     function(cb){
       return rateLimiter.epochMs(appName, key, client, function(err, response){
         if (err){return cb(err);}
         // Time returned is the last time epochMs was set. Need to add a minute to
         // get the time it resets
-        responseBody['reset'] =  response + (1000 * 60);
+        responseBody.reset =  response + (1000 * 60);
         return cb();
-      })
+      });
     }
   ], function(err){
       if (err){
@@ -95,7 +94,7 @@ app.post('/rate-limit', function(req, res) {
 
 if (cluster.isMaster) {
   var numCPUs = os.cpus().length;
-  logger.info('Starting ' + numCPUs + ' penalty box processes')
+  logger.info('Starting ' + numCPUs + ' penalty box processes');
   for (var i = 0; i < numCPUs; i++) {
     cluster.fork();
   }

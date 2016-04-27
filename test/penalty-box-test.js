@@ -38,7 +38,7 @@ describe("HTTP Endpoint Tests", function(){
                     assert.equal(res.body['remaining'], 9);
                     assert(res.body['reset'] >= epoch1 && res.body['reset'] <= epoch2)
 
-                    form["rate_limit"] = 100
+                    form["rate_limit"] = 100;
                     request(app)
                     .post('/rate-limit')
                     .set('Content-Type', 'application/json')
@@ -51,7 +51,7 @@ describe("HTTP Endpoint Tests", function(){
                         assert.equal(res.body['remaining'], 8);
                         assert(res.body['reset'] >= epoch1 && res.body['reset'] <= epoch2)
 
-                        form["rate_limit"] = 1000
+                        form["rate_limit"] = 1000;
                         request(app)
                         .post('/rate-limit')
                         .set('Content-Type', 'application/json')
