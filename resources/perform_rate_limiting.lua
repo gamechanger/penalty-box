@@ -7,12 +7,8 @@ local rateLimit = ARGV[3]
 local keyTimeout = ARGV[4]
 
 -- Ensure that the rate limit keys are set up
-if (redis.call('setnx', rlKey, rateLimit) == 1) then
-    redis.call('expire', rlKey, keyTimeout)
-end
-if (redis.call('setnx', epochKey, currentEpoch) == 1) then
-    redis.call('expire', epochKey, keyTimeout)
-end
+redis.call('set', rlKey, rateLimit, 'EX', keyTimeout, 'NX')
+redis.call('set', epochKey, currentEpoch, 'EX', keyTimeout, 'NX')
 redis.call('setnx', tokenKey, rateLimit)
 
 -- Perform the actual rate limit logic
