@@ -66,7 +66,7 @@ app.post('/rate-limit', function(req, res) {
     },
     function(cb){
       return rateLimiter.rateLimitAppKey(appName, key, cost, function(err, returnVals){
-            if(err){return cb(err);}
+        if(err){return cb(err);}
 
         if (returnVals[0] < 0) {
           responseBody['is_rate_limited'] = true;
