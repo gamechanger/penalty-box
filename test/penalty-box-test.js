@@ -23,10 +23,55 @@ describe("HTTP Endpoint Tests", function(){
                     done();
                 });
             });
+            it("cannot change rate limit", function(done){
+                epoch1 = d.getTime() + 60 * 1000;
+                form = {"app_name": "test1", "key": "keyX", "cost": 1, "rate_limit": 10};
+                request(app)
+                .post('/rate-limit')
+                .set('Content-Type', 'application/json')
+                .send(form)
+                .end(function(err, res){
+                    epoch2 = d.getTime() + 60 * 1000;
+                    assert.equal(200, res.status);
+                    assert.equal(res.body['limit'], 10);
+                    assert.equal(res.body['is_rate_limited'], false);
+                    assert.equal(res.body['remaining'], 9);
+                    assert(res.body['reset'] >= epoch1 && res.body['reset'] <= epoch2)
+
+                    form["rate_limit"] = 100;
+                    request(app)
+                    .post('/rate-limit')
+                    .set('Content-Type', 'application/json')
+                    .send(form)
+                    .end(function(err, res){
+                        epoch2 = d.getTime() + 60 * 1000;
+                        assert.equal(200, res.status);
+                        assert.equal(res.body['limit'], 10);
+                        assert.equal(res.body['is_rate_limited'], false);
+                        assert.equal(res.body['remaining'], 8);
+                        assert(res.body['reset'] >= epoch1 && res.body['reset'] <= epoch2)
+
+                        form["rate_limit"] = 1000;
+                        request(app)
+                        .post('/rate-limit')
+                        .set('Content-Type', 'application/json')
+                        .send(form)
+                        .end(function(err, res){
+                            epoch2 = d.getTime() + 60 * 1000;
+                            assert.equal(200, res.status);
+                            assert.equal(res.body['limit'], 10);
+                            assert.equal(res.body['is_rate_limited'], false);
+                            assert.equal(res.body['remaining'], 7);
+                            assert(res.body['reset'] >= epoch1 && res.body['reset'] <= epoch2)
+                            done();
+                        });
+                    });
+                });
+            });
 
             it("multiple calls leading to 404. Check reset properly", function(done){
                 epoch1 = d.getTime() + 60 * 1000;
-                form = {"app_name": "test1", "key": "keyX", "cost": 1, "rate_limit": 2};
+                form = {"app_name": "test1", "key": "keyY", "cost": 1, "rate_limit": 2};
                 request(app)
                 .post('/rate-limit')
                 .set('Content-Type', 'application/json')
