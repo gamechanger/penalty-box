@@ -62,8 +62,7 @@ app.post('/rate-limit', function(req, res) {
         }
 
         responseBody.remaining = returnVals[1];
-        // reset of time stamp should be a minute from now
-        responseBody.reset = returnVals[2] + (1000 * 60);
+        responseBody.reset = returnVals[2];
         responseBody.limit = returnVals[3];
         res.json(responseBody);
         return;

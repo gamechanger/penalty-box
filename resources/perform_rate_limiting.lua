@@ -20,10 +20,11 @@ end
 
 local storedEpoch = redis.call('get', epochKey)
 local currentTokens = 0
-if storedEpoch == false or (currentEpoch - tonumber(storedEpoch)) > (secondsInMinute * millisecondsInSecond) then
-    redis.call('set', epochKey, currentEpoch, 'EX', keyTimeout)
+if storedEpoch == false or currentEpoch > tonumber(storedEpoch) then
+    -- store the time when the rate limit resets
+    storedEpoch = (currentEpoch + (secondsInMinute * millisecondsInSecond))
+    redis.call('set', epochKey, storedEpoch, 'EX', keyTimeout)
     currentTokens = storedRateLimit
-    storedEpoch = currentEpoch
 else
     storedEpoch = tonumber(storedEpoch)
     currentTokens = redis.call('get', tokenKey)
