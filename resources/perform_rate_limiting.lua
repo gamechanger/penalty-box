@@ -23,7 +23,9 @@ local currentTokens = 0
 if storedEpoch == false or (currentEpoch - tonumber(storedEpoch)) > (secondsInMinute * millisecondsInSecond) then
     redis.call('set', epochKey, currentEpoch, 'EX', keyTimeout)
     currentTokens = storedRateLimit
+    storedEpoch = currentEpoch
 else
+    storedEpoch = tonumber(storedEpoch)
     currentTokens = redis.call('get', tokenKey)
     if currentTokens == false then
         redis.call('set', tokenKey, storedRateLimit, 'EX', keyTimeout)
@@ -40,4 +42,4 @@ else
     redis.call('set', tokenKey, currentTokens, 'EX', keyTimeout)
 end
 
-return {returnStatus, currentTokens}
+return {returnStatus, currentTokens, storedEpoch, storedRateLimit}
