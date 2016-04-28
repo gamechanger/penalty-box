@@ -52,10 +52,8 @@ app.post('/rate-limit', function(req, res) {
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
-  async.waterfall([
-    function(cb){
-      return rateLimiter.rateLimitAppKey(appName, key, cost, rateLimit, function(err, returnVals){
-        if(err){return cb(err);}
+  rateLimiter.rateLimitAppKey(appName, key, cost, rateLimit, function(err, returnVals){
+        if(err){res.status(500);}
 
         if (returnVals[0] < 0) {
           responseBody.is_rate_limited = true;
@@ -64,32 +62,12 @@ app.post('/rate-limit', function(req, res) {
         }
 
         responseBody.remaining = returnVals[1];
-        return cb();
-      });
-    },
-    function(cb){
-      return rateLimiter.rateLimit(appName, key, client, function(err, response){
-        if (err){return cb(err);}
-        responseBody.limit =  response;
-        return cb();
-      });
-    },
-    function(cb){
-      return rateLimiter.epochMs(appName, key, client, function(err, response){
-        if (err){return cb(err);}
-        // Time returned is the last time epochMs was set. Need to add a minute to
-        // get the time it resets
-        responseBody.reset =  response + (1000 * 60);
-        return cb();
-      });
-    }
-  ], function(err){
-      if (err){
-        res.status(500);
-      }
-      res.json(responseBody);
-      return;
-    });
+        // reset of time stamp should be a minute from now
+        responseBody.reset = returnVals[2] + (1000 * 60);
+        responseBody.limit = returnVals[3];
+        res.json(responseBody);
+        return;
+  });
 });
 
 if (cluster.isMaster) {
