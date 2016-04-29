@@ -47,8 +47,6 @@ app.post('/rate-limit', function(req, res) {
 
   responseBody = {};
 
-  client.keys('*', function(err, values){});
-
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
