@@ -27,17 +27,24 @@ app.get('/health', function(req, res) {
   return res.sendStatus(200);
 });
 
+var DEFAULT_RATE_LIMIT_PERIOD_SECONDS = 60
+
 /**
  * POST /rate-limit
  * This will check the application's key to make sure a request is allowed
+ *
+ * Return Values:
  * limit: number of requests allowed per minute
  * remaining: number of requests remaining
  * is_rate_limited: will return boolean based off of if the request should be rate limited
  * reset: time your rate limit will be reset, in epoch_ms
+ *
  * @param {string} app_name the name of the app trying to use the rate limiter
  * @param {string} key the key the app is attempting to rate limit on
  * @param {integer} cost how many tokens the requests take
  * @param {integer} rate_limit max number of requests per minute for this key
+ * @param {integer} period_seconds amount of time in seconds until the rate limit resets and the clients
+ * are given rate_limit more requets. This param is optional
  */
 app.post('/rate-limit', function(req, res) {
   appName = req.body.app_name;
@@ -45,12 +52,20 @@ app.post('/rate-limit', function(req, res) {
   cost = req.body.cost;
   rateLimit = req.body.rate_limit;
 
+  // Period is an optional argument. It allows you to specify how long till your rate limit
+  // resets. If you do not specify your rate limit period we use the default
+  if (req.body.period_seconds !== undefined) {
+    rateLimitPeriodMs = req.body.period_seconds * 1000
+  } else {
+    rateLimitPeriodMs = DEFAULT_RATE_LIMIT_PERIOD_SECONDS * 1000
+  }
+
   responseBody = {};
 
   if ([appName, key, cost, rateLimit].some(_.isUndefined)) {
     return res.sendStatus(400);
   }
-  rateLimiter.rateLimitAppKey(appName, key, cost, rateLimit, function(err, returnVals){
+  rateLimiter.rateLimitAppKey(appName, key, cost, rateLimit, rateLimitPeriodMs, client, function(err, returnVals){
         if(err){res.status(500);}
 
         if (returnVals[0] < 0) {
@@ -64,6 +79,35 @@ app.post('/rate-limit', function(req, res) {
         responseBody.limit = returnVals[3];
         res.json(responseBody);
         return;
+  });
+});
+
+/**
+ * GET /rate-limited
+ * This will check the application's key to see if the key is currently rate limited
+ *
+ * Return Values:
+ * is_rate_limited: will return boolean based off of if the key is currently rate limited
+ *
+ * @param {string} app_name the name of the app trying to use the rate limiter
+ * @param {string} key the key the app is attempting to rate limit on
+ */
+app.get('/rate-limited', function(req, res) {
+  appName = req.query.app_name;
+  key = req.query.key;
+ 
+  responseBody = {};
+
+  if ([appName, key].some(_.isUndefined)) {
+    return res.sendStatus(400);
+  }
+
+  rateLimiter.isRateLimited(appName, key, client, function(err, rateLimited) {
+          if(err){res.status(500);}
+
+          responseBody.is_rate_limited = rateLimited;        
+          res.json(responseBody);
+          return;
   });
 });
 

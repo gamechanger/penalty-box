@@ -5,6 +5,9 @@ local currentEpoch = tonumber(ARGV[1])
 local requestCost = tonumber(ARGV[2])
 local rateLimit = tonumber(ARGV[3])
 local keyTimeout = ARGV[4]
+local rateLimitPeriodMs = tonumber(ARGV[4])
+local keyTimeout = ARGV[5]
+
 
 local secondsInMinute = 60
 local millisecondsInSecond = 1000
@@ -22,7 +25,7 @@ local storedResetEpoch = redis.call('get', epochKey)
 local currentTokens = 0
 if storedResetEpoch == false or currentEpoch > tonumber(storedResetEpoch) then
     -- store the time when the rate limit resets
-    storedResetEpoch = (currentEpoch + (secondsInMinute * millisecondsInSecond))
+    storedResetEpoch = (currentEpoch + (rateLimitPeriodMs))
     redis.call('set', epochKey, storedResetEpoch, 'EX', keyTimeout)
     currentTokens = storedRateLimit
 else
