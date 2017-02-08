@@ -54,7 +54,7 @@ app.post('/rate-limit', function(req, res) {
 
   // Period is an optional argument. It allows you to specify how long till your rate limit
   // resets. If you do not specify your rate limit period we use the default
-  if req.body.period !== undefined {
+  if (req.body.period !== undefined) {
     rateLimitPeriodMs = req.body.period * 1000
   } else {
     rateLimitPeriodMs = DEFAULT_RATE_LIMIT_PERIOD_SECONDS * 1000
@@ -102,7 +102,7 @@ app.get('/rate-limit', function(req, res) {
     return res.sendStatus(400);
   }
 
-  rateLimiter.isRateLimited(appName, key, function(err, rateLimited) {
+  rateLimiter.isRateLimited(appName, key, client, function(err, rateLimited) {
           if(err){res.status(500);}
 
           responseBody.is_rate_limited = rateLimited;        
