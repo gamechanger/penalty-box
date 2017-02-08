@@ -43,7 +43,7 @@ var DEFAULT_RATE_LIMIT_PERIOD_SECONDS = 60
  * @param {string} key the key the app is attempting to rate limit on
  * @param {integer} cost how many tokens the requests take
  * @param {integer} rate_limit max number of requests per minute for this key
- * @param {integer} period amount of time in seconds until the rate limit resets and the clients
+ * @param {integer} period_seconds amount of time in seconds until the rate limit resets and the clients
  * are given rate_limit more requets. This param is optional
  */
 app.post('/rate-limit', function(req, res) {
@@ -54,8 +54,8 @@ app.post('/rate-limit', function(req, res) {
 
   // Period is an optional argument. It allows you to specify how long till your rate limit
   // resets. If you do not specify your rate limit period we use the default
-  if (req.body.period !== undefined) {
-    rateLimitPeriodMs = req.body.period * 1000
+  if (req.body.period_seconds !== undefined) {
+    rateLimitPeriodMs = req.body.period_seconds * 1000
   } else {
     rateLimitPeriodMs = DEFAULT_RATE_LIMIT_PERIOD_SECONDS * 1000
   }
@@ -93,8 +93,8 @@ app.post('/rate-limit', function(req, res) {
  * @param {string} key the key the app is attempting to rate limit on
  */
 app.get('/rate-limit', function(req, res) {
-  appName = req.body.app_name;
-  key = req.body.key;
+  appName = req.query.app_name;
+  key = req.query.key;
  
   responseBody = {};
 

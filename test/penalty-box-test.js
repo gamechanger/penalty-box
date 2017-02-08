@@ -6,7 +6,7 @@ describe("HTTP Endpoint Tests", function(){
     d = new Date();
     describe("Get Tests", function(){
         describe("/rate-limit tests", function(){
-            it("simple rate limit when key not set up yet", function() {
+            it("simple rate limit when key not set up yet", function(done) {
                 request(app)
                 .get('/rate-limit')
                 .query({app_name: "test"})
@@ -16,7 +16,7 @@ describe("HTTP Endpoint Tests", function(){
                     done();
                 });
             });
-            it("simple rate limit when key is set up", function() {
+            it("simple rate limit when key is set up", function(done) {
                 form = {"app_name": "test", "key": "key4", "cost": 1, "rate_limit": 10};
                 request(app)
                 .post('/rate-limit')
@@ -33,7 +33,7 @@ describe("HTTP Endpoint Tests", function(){
                     });
                 });
             });
-            it("simple rate limit when key is set up and are rate limited", function() {
+            it("simple rate limit when key is set up and are rate limited", function(done) {
                 form = {"app_name": "test", "key": "key5", "cost": 1, "rate_limit": 1};
                 request(app)
                 .post('/rate-limit')
@@ -71,16 +71,16 @@ describe("HTTP Endpoint Tests", function(){
                     done();
                 });
             });
-            it("post method with period", function(done){
-                period = 1000;
-                epoch1 = d.getTime() + period * 1000;
-                form = {"app_name": "test2", "key": "key2", "cost": 1, "rate_limit": 10, "period": period};
+            it("post method with period_seconds", function(done){
+                period_seconds = 1000;
+                epoch1 = d.getTime() + period_seconds * 1000;
+                form = {"app_name": "test2", "key": "key2", "cost": 1, "rate_limit": 10, "period_seconds": period_seconds};
                 request(app)
                 .post('/rate-limit')
                 .set('Content-Type', 'application/json')
                 .send(form)
                 .end(function(err, res){
-                    epoch2 = d.getTime() + period * 1000;
+                    epoch2 = d.getTime() + period_seconds * 1000;
                     assert.equal(200, res.status);
                     assert.equal(res.body['limit'], 10);
                     assert.equal(res.body['is_rate_limited'], false);
