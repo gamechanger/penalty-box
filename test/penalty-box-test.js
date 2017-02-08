@@ -4,6 +4,54 @@ var assert = require('assert');
 
 describe("HTTP Endpoint Tests", function(){
     d = new Date();
+    describe("Get Tests", function(){
+        describe("/rate-limit tests", function(){
+            it("simple rate limit when key not set up yet", function() {
+                request(app)
+                .get('/rate-limit')
+                .query({app_name: "test"})
+                .query({key: "key3"})
+                .end(function(err, res){
+                    assert.equal(res.body['is_rate_limited'], false);
+                    done();
+                });
+            });
+            it("simple rate limit when key is set up", function() {
+                form = {"app_name": "test", "key": "key4", "cost": 1, "rate_limit": 10};
+                request(app)
+                .post('/rate-limit')
+                .set('Content-Type', 'application/json')
+                .send(form)
+                .end(function(err, res){
+                    request(app)
+                    .get('/rate-limit')
+                    .query({app_name: "test"})
+                    .query({key: "key4"})
+                    .end(function(err, res){
+                        assert.equal(res.body['is_rate_limited'], false);
+                        done();
+                    });
+                });
+            });
+            it("simple rate limit when key is set up and are rate limited", function() {
+                form = {"app_name": "test", "key": "key5", "cost": 1, "rate_limit": 1};
+                request(app)
+                .post('/rate-limit')
+                .set('Content-Type', 'application/json')
+                .send(form)
+                .end(function(err, res){
+                    request(app)
+                    .get('/rate-limit')
+                    .query({app_name: "test"})
+                    .query({key: "key5"})
+                    .end(function(err, res){
+                        assert.equal(res.body['is_rate_limited'], true);
+                        done();
+                    });
+                });
+            });
+        });
+    });
     describe("POST Tests", function(){
         describe("/rate-limit tests", function(){
             it("simple post method", function(done){
@@ -15,6 +63,24 @@ describe("HTTP Endpoint Tests", function(){
                 .send(form)
                 .end(function(err, res){
                     epoch2 = d.getTime() + 60 * 1000;
+                    assert.equal(200, res.status);
+                    assert.equal(res.body['limit'], 10);
+                    assert.equal(res.body['is_rate_limited'], false);
+                    assert.equal(res.body['remaining'], 9);
+                    assert(res.body['reset'] >= epoch1 && res.body['reset'] <= epoch2)
+                    done();
+                });
+            });
+            it("post method with period", function(done){
+                period = 1000;
+                epoch1 = d.getTime() + period * 1000;
+                form = {"app_name": "test2", "key": "key2", "cost": 1, "rate_limit": 10, "period": period};
+                request(app)
+                .post('/rate-limit')
+                .set('Content-Type', 'application/json')
+                .send(form)
+                .end(function(err, res){
+                    epoch2 = d.getTime() + period * 1000;
                     assert.equal(200, res.status);
                     assert.equal(res.body['limit'], 10);
                     assert.equal(res.body['is_rate_limited'], false);
