@@ -8,7 +8,7 @@ describe("HTTP Endpoint Tests", function(){
         describe("/rate-limit tests", function(){
             it("simple rate limit when key not set up yet", function(done) {
                 request(app)
-                .get('/rate-limit')
+                .get('/rate-limited')
                 .query({app_name: "test"})
                 .query({key: "key3"})
                 .end(function(err, res){
@@ -24,7 +24,7 @@ describe("HTTP Endpoint Tests", function(){
                 .send(form)
                 .end(function(err, res){
                     request(app)
-                    .get('/rate-limit')
+                    .get('/rate-limited')
                     .query({app_name: "test"})
                     .query({key: "key4"})
                     .end(function(err, res){
@@ -41,7 +41,7 @@ describe("HTTP Endpoint Tests", function(){
                 .send(form)
                 .end(function(err, res){
                     request(app)
-                    .get('/rate-limit')
+                    .get('/rate-limited')
                     .query({app_name: "test"})
                     .query({key: "key5"})
                     .end(function(err, res){

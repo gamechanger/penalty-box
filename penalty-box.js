@@ -83,7 +83,7 @@ app.post('/rate-limit', function(req, res) {
 });
 
 /**
- * GET /rate-limit
+ * GET /rate-limited
  * This will check the application's key to see if the key is currently rate limited
  *
  * Return Values:
@@ -92,7 +92,7 @@ app.post('/rate-limit', function(req, res) {
  * @param {string} app_name the name of the app trying to use the rate limiter
  * @param {string} key the key the app is attempting to rate limit on
  */
-app.get('/rate-limit', function(req, res) {
+app.get('/rate-limited', function(req, res) {
   appName = req.query.app_name;
   key = req.query.key;
  
