@@ -25,8 +25,8 @@ datadog_port: port to connect to on the datadog host (8135)
 ```
 
 ### Endpoints
-POST /rate-limit
-GET /rate-limited
+#### POST /rate-limit
+#### GET /rate-limited
 
 ### Example Usage
 #### POST /rate-limit
@@ -84,7 +84,7 @@ Penalty Box will respond with a response as follows:
 
 Some important information on the response body:
 ```
-is_rate_limited - will return false as long as the cost does not exceed the amount of requests remaining
+is_rate_limited - will return true or false depending on if the key is currently rate limited
 ```
 
 
