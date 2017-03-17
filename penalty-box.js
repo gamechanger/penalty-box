@@ -27,7 +27,7 @@ app.get('/health', function(req, res) {
   return res.sendStatus(200);
 });
 
-var DEFAULT_RATE_LIMIT_PERIOD_SECONDS = 60
+var DEFAULT_RATE_LIMIT_PERIOD_SECONDS = 60;
 
 /**
  * POST /rate-limit
@@ -95,7 +95,7 @@ app.post('/rate-limit', function(req, res) {
 app.get('/rate-limited', function(req, res) {
   appName = req.query.app_name;
   key = req.query.key;
- 
+
   responseBody = {};
 
   if ([appName, key].some(_.isUndefined)) {
@@ -105,7 +105,7 @@ app.get('/rate-limited', function(req, res) {
   rateLimiter.isRateLimited(appName, key, client, function(err, rateLimited) {
           if(err){res.status(500);}
 
-          responseBody.is_rate_limited = rateLimited;        
+          responseBody.is_rate_limited = rateLimited;
           res.json(responseBody);
           return;
   });
