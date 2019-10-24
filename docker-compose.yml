@@ -21,6 +21,7 @@ services:
       sh -c '
         set -ex
         sleep 7.5
+        apt-get update
         apt-get install socat -y
         socat TCP-LISTEN:6379,fork TCP4:redis:6379 &
         echo "Starting tests (inside docker container)"
