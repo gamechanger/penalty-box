@@ -1,2 +1,3 @@
-FROM node:4
-COPY . /mnt/test
+FROM docker.gamechanger.io/penalty-box
+COPY . /gc/penalty-box
+RUN npm install
