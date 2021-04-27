@@ -23,7 +23,7 @@
   "main": "./penalty-box.js",
   "dependencies": {
     "express": "^4.4.5",
-    "redis": "^2.5.3",
+    "redis": "^3.1.1",
     "winston": "^0.7.3",
     "body-parser": "^1.4.3",
     "optimist": "^0.6.1",
